@@ -1,0 +1,234 @@
+{% load quiz %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.css"  rel="stylesheet" />
+    <title>QuizMe - {{quiz.name}}</title>
+    <style>
+        :root{
+    --blue: #136ad5;
+    --red: #f71008; 
+    --green: #169721;
+}
+
+body{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Rubik', monospace;
+}
+
+#form{
+    width: 800px;
+    margin: 10px;
+    padding: 10px;
+    margin-bottom: 50px;
+    margin-top: 30px;
+}
+
+.answers{
+    display: flex;
+    margin-left: 50px;
+}
+
+input[type="radio"]{
+    display: none;
+}
+
+.radio-button{
+    width: 300px;
+    height: 60px;
+    margin: 10px;
+    padding: 8px 20px;
+    border: 2px solid #00000050;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+input:checked + .radio-button{
+    border: 2px solid var(--blue);
+    animation: bounceIn 1s ease-in-out;
+    color: var(--blue);
+    font-weight: 700;
+}
+
+@keyframes bounceIn {
+    0%{
+        opacity: 0;
+        transform: scale3d(0.3, 0.3, 0.3);
+    }
+    20%{
+        transform: scale3d(1.1, 1.1, 1.1);
+    }
+    40%{
+        transform: scale3d(0.9, 0.9, 0.9);
+    }
+    60%{
+        opacity: 1;
+        transform: scale3d(1.03, 1.03, 1.03);
+    }
+    80%{
+        transform: scale3d(0.97, 0.97, 0.97);
+    }
+    100%{
+        opacity: 1;
+        transform: scaleX(1); 
+    }
+}
+
+#counter{
+    position: fixed;
+    left: 50%;
+    bottom: 10px;
+    color: #136ad5;
+    font-weight: 800;
+    font-size: 30px;
+}
+
+.send{
+    padding: 12px 16px;
+    float: right;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+    background-color: red;
+}
+
+.map-button{
+    display: block;
+    padding: 5px;
+    margin: 5px;
+    border: 1px solid var(--blue);
+    border-radius: 5px;
+    background-color: transparent;
+    color: var(--blue);
+    cursor: pointer;
+}
+
+.map{
+    position: fixed;
+    z-index: 1000;
+    top: 100px;
+    right: 10px;
+    display: block;
+    column-count: 4;
+    column-width: 10px;
+    column-gap: 10px;
+}
+
+a{
+    text-decoration: none;
+}
+
+.send{
+    float: right;
+    background-color: transparent;
+}
+    </style>
+</head>
+<body>
+    {% if usernotin %}
+    <div class="map">
+        {% for question in questions %}
+            <a id="answer{{forloop.counter}}" href="#question{{forloop.counter}}" class="map-button">{{forloop.counter}}</a> 
+        {% endfor %}
+    </div>
+    <form id="form" method="post">
+        <center class="text-4xl">{{quiz.name}}</center> <br>
+        <center class="text-gray-500">{{quiz.description}}</center> <br>
+        {% csrf_token %}
+        <p id="counter"></p>
+        {% for question in questions %}
+            <span id="question{{forloop.counter}}">{{forloop.counter}}. {{question.question|safe}}</span>
+            <div class="answers">
+                <label class="custom-radio"> 
+                    <input type="radio" name="answer{{forloop.counter}}" onclick="showTime()" required value="{{question.answer1}}">
+                    <div class="radio-button">
+                        a) &nbsp;
+                        <div class="radio-content">
+                            <span>{{question.answer1|safe}}</span>
+                        </div>
+                    </div>
+                </label>
+                <label class="custom-radio">
+                    <input type="radio" name="answer{{forloop.counter}}" onclick="showTime()" required value="{{question.answer2}}">
+                    <div class="radio-button">
+                        b) &nbsp;
+                        <div class="radio-content">
+                            <span>{{question.answer2|safe}}</span>
+                        </div>
+                    </div>
+                </label> 
+            </div>
+            <div class="answers">
+                <label class="custom-radio">
+                    <input type="radio" name="answer{{forloop.counter}}" onclick="showTime()" required value="{{question.answer3}}">
+                    <div class="radio-button">
+                        c) &nbsp;
+                        <div class="radio-content">
+                            <span>{{question.answer3|safe}}</span>
+                        </div>
+                    </div>
+                </label>
+                <label class="custom-radio">
+                    <input type="radio" name="answer{{forloop.counter}}" onclick="showTime()" required value="{{question.answer4}}">
+                    <div class="radio-button">
+                        d) &nbsp;
+                        <div class="radio-content">
+                            <span>{{question.answer4|safe}}</span>
+                        </div>
+                    </div>
+                </label>
+            </div> <br>
+        {% endfor %}
+        <div class="send">
+            <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                Topshirish
+                <svg aria-hidden="true" class="w-5 h-5 ml-2 -mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+            </button>
+        </div>
+    </form>
+    {% else %}
+    <style>
+        body{
+            display: block;
+        }
+    </style>
+    <div class="container py-8 px-8">
+        <div id="accordion-collapse" data-accordion="collapse">
+            {{cases|results|safe}}
+        </div>
+        <div style="display: inline-block;">
+            Your score is: {{score}}
+        </div>
+    </div>
+    {% endif %}
+</body>
+<script>
+    function showTime() {
+        var inputs = document.getElementById("form").elements;
+        var counter = document.getElementById("counter")
+        var count  = 0;
+        for (var i = 0; i < inputs.length; i++) {
+            if (inputs[i].type == 'radio' && inputs[i].checked) {
+                let mapper = document.getElementById(`${inputs[i].name}`)
+                console.log(mapper)
+                mapper.style.color = "#fff";
+                mapper.style.backgroundColor = "#136ad5"
+                count++;
+            }
+        }
+        console.log(count);
+        counter.textContent = `${count}/40`
+    }
+    showTime();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
+</html>
